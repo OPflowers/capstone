@@ -7,7 +7,7 @@ from geopy.geocoders import Nominatim
 from googlegeocoder import GoogleGeocoder
 
 endpoint = 'https://maps.googleapis.com/maps/api/directions/json?'
-api_key = 'AIzaSyABFLTbVUwK1gJvs5rweaBM1bU-fBtXXSI'
+api_key = 'API_KEY_HERE'
 geocoder = GoogleGeocoder(api_key)
 
 origin = input('Where are you?: ').replace(' ','+')
