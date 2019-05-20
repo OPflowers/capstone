@@ -13,7 +13,7 @@ geocoder = GoogleGeocoder(api_key)
 origin = input('Where are you?: ').replace(' ','+')
 
 geolocator = Nominatim(user_agent= "capstone")
-location = geolocator.geocode("1600 amphitheatre parkway")
+location = geolocator.geocode("3783 Penderwood Dr")
 print(location.address)
 print((location.latitude, location.longitude))
 #gmaps = googlemaps.Client(api_key)
@@ -42,7 +42,20 @@ def getDistance(lat1, lng1, lat2, lng2):
    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
    d = earth_radius * c
    return d
+def calc_time(distance, status, speed_limit):
+   speed = speed_limit + 20
+   factor = 0
+   if status == "Cloudy":
+      factor = 1
+   elif status == "Rain":
+      factor = 3
+   elif status == "Thunderstorm" or status == "Snow":
+      factor = 8
+   elif status == "Hail":
+      factor = 6
 
+   time = distance/(speed * 1/math.pow(math.e,factor/12))
+   return time
 def change_to_radians(degree):
    return degree * (math.pi/180)
 
@@ -57,18 +70,21 @@ def findPlaces(latitude, longitude,radius, origin_lat, origin_lng, pagetoken = N
    # print(res)
    print("here results ---->>> ", len(res["results"]))
    final_destination = [math.inf, math.inf]
+   #print("working")
    for result in res["results"]:
-      #info = ";".join(map(str,result["geometry"]["location"]["lat"],result["geometry"]["location"]["lng"],))
-      #print(info)
-      if getDistance(origin_lat, origin_lng, result["lat"], result["lng"]) < getDistance(origin_lat, origin_lng, final_destination[0], final_destination[1]):
+      info = ";".join(map(str,result["geometry"]["location"]["lat"],result["geometry"]["location"]["lng"],))
+      print(info)
+      if getDistance(origin_lat, origin_lng, result["latitude"], result["lng"]) < getDistance(origin_lat, origin_lng, final_destination[0], final_destination[1]):
          final_destination[0] = result["lat"]
          final_destination[1] = result['lng']
-      print((result["lat"]),result['lng'])
+      #print((result["lat"]),result['lng'])
    pagetoken = res.get("next_page_token",None)
 
    if final_destination[0] == math.inf and final_destination[1] == math.inf:
       return None
-   return final_destination
+   else:
+      print (final_destination[0], final_destination[1])
+      return final_destination
 
 pagetoken = None
 radius = 200
@@ -78,4 +94,4 @@ while destination == None:
      if destination != None:
         break
      else:
-        radius = radius + 200
+        radius = radius + 500
